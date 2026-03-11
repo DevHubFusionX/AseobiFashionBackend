@@ -54,6 +54,10 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/discounts', discountRoutes);
 app.use('/api/newsletter', newsletterRoutes);
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'active', timestamp: new Date() });
+});
+
 app.use('/sitemap.xml', sitemapRoutes);
 
 app.use(errorHandler);
