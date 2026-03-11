@@ -1,3 +1,5 @@
+import jwt from 'jsonwebtoken';
+import Admin from '../models/Admin.js';
 import Product from '../models/Product.js';
 import Order from '../models/Order.js';
 import Discount from '../models/Discount.js';
@@ -47,6 +49,59 @@ export const getAdminStats = async (req, res, next) => {
                 newsletterSubscribers
             },
             recentOrders
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const adminLogin = async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ success: false, message: 'Please provide email and password' });
+        }
+
+        const admin = await Admin.findOne({ email });
+        if (!admin || !(await admin.comparePassword(password))) {
+            return res.status(401).json({ success: false, message: 'Invalid email or password' });
+        }
+
+        const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, {
+            expiresIn: process.env.JWT_EXPIRE || '7d'
+        });
+
+        res.json({
+            success: true,
+            token,
+            admin: {
+                id: admin._id,
+                email: admin.email
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const updateAdminProfile = async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
+        const admin = await Admin.findById(req.admin._id);
+
+        if (email) admin.email = email;
+        if (password) admin.password = password;
+
+        await admin.save();
+
+        res.json({
+            success: true,
+            message: 'Profile updated successfully',
+            admin: {
+                id: admin._id,
+                email: admin.email
+            }
         });
     } catch (error) {
         next(error);

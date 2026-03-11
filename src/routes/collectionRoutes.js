@@ -8,9 +8,11 @@ import {
 
 const router = express.Router();
 
+import { protect } from '../middleware/auth.js';
+
 router.get('/', getCollections);
-router.post('/', createCollection);
-router.put('/:id', updateCollection);
-router.delete('/:id', deleteCollection);
+router.post('/', protect, createCollection);
+router.put('/:id', protect, updateCollection);
+router.delete('/:id', protect, deleteCollection);
 
 export default router;
