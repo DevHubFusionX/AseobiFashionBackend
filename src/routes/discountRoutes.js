@@ -1,5 +1,6 @@
 import express from 'express';
 import Discount from '../models/Discount.js';
+import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -47,7 +48,7 @@ router.post('/validate', async (req, res) => {
 });
 
 // GET all discounts (Admin)
-router.get('/all', async (req, res) => {
+router.get('/all', protect, async (req, res) => {
     try {
         const discounts = await Discount.find().sort({ createdAt: -1 });
         res.json(discounts);
@@ -57,7 +58,7 @@ router.get('/all', async (req, res) => {
 });
 
 // CREATE discount (Admin)
-router.post('/', async (req, res) => {
+router.post('/', protect, async (req, res) => {
     try {
         const discount = new Discount(req.body);
         await discount.save();
@@ -68,7 +69,7 @@ router.post('/', async (req, res) => {
 });
 
 // DELETE discount (Admin)
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', protect, async (req, res) => {
     try {
         await Discount.findByIdAndDelete(req.params.id);
         res.json({ message: 'Discount deleted' });

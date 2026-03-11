@@ -17,9 +17,11 @@ const orderValidation = [
     body('deliveryMethod').isIn(['Delivery', 'Pickup']).withMessage('Invalid delivery method'),
 ];
 
-router.get('/', getAllOrders);
+import { protect } from '../middleware/auth.js';
+
+router.get('/', protect, getAllOrders);
 router.post('/', limiter, orderValidation, createOrder);
 router.get('/:id', getOrderById);
-router.put('/:id/status', updateOrderStatus);
+router.put('/:id/status', protect, updateOrderStatus);
 
 export default router;

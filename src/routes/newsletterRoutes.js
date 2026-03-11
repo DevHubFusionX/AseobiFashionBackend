@@ -6,8 +6,10 @@ const router = express.Router();
 // Public route
 router.post('/subscribe', subscribe);
 
-// Admin routes (In a real app, add auth middleware here)
-router.get('/', getSubscribers);
-router.delete('/:id', deleteSubscriber);
+import { protect } from '../middleware/auth.js';
+
+// Admin routes
+router.get('/', protect, getSubscribers);
+router.delete('/:id', protect, deleteSubscriber);
 
 export default router;
